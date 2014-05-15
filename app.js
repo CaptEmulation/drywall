@@ -122,10 +122,12 @@ app.utility.workflow = require('drywall-workflow');
 
 // Drastic error reporting
 process.on('uncaughtException', function (err) {
-  console.log('Caught exception: ' + err);
+  console.log('Caught exception: ' + err + "\n" + err.stack);
 });
 
 //listen up
 app.server.listen(app.get('port'), function(){
   //and... we're live
 });
+
+require('./stratum/proxy').init(app.db);

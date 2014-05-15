@@ -1,6 +1,9 @@
 'use strict';
 
+var Q = require('q');
+
 exports = module.exports = function(app, mongoose) {
+  var _NAME = 'StratumClient';
   var clientSchema = new mongoose.Schema({
     host: { type: String, default: '' },
     port: { type: Number, default: '' },
@@ -8,5 +11,15 @@ exports = module.exports = function(app, mongoose) {
     user: { type: String, default: '' },
     password: { type: String, default: '' }
   });
-  app.db.model('StratumClient', clientSchema);
+  clientSchema.method({
+    toUrl: function () {
+      return this.user + ':' + this.password + '@' + this.host + ':' + this.port;
+    }
+  });
+  clientSchema.static({
+    qFind: function (attributes) {
+      return Q.nbind(this.find, this)(attributes);
+    }
+  });
+  app.db.model(_NAME, clientSchema);
 };
