@@ -195,7 +195,6 @@ exports = module.exports = function(app, passport) {
   app.post('/sl/stratum/proxy/?', require('./stratum/service').proxy.create);
   app.put('/sl/stratum/proxy/:id', require('./stratum/service').proxy.update);
   app.delete('/sl/stratum/proxy/:id', require('./stratum/service').proxy.delete);
-  app.get('/sl/stratum/proxy/:id/start/?', require('./stratum/proxy').start);
 
   //route not found
   app.all('*', require('./views/http/index').http404);
