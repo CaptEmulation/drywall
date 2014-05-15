@@ -24,7 +24,8 @@
     "helmet": "~0.1.2",
     "isolated-bcrypt": "~0.0.4",
     "q": "~0.1",
-    "wait.for-es6": ""
+    "wait.for-es6": "",
+    "underscore" : "~1.6.0"
   },
   "devDependencies": {
     "grunt": "~0.4.1",

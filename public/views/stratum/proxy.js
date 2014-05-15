@@ -38,6 +38,7 @@ define(function (require, exports, module) {
             model: this.model
           });
           this.$el.append(proxyView.render().$el);
+          this.model.set('log', "Loading proxy...<br>");
         }.bind(this));
 
     },
@@ -178,7 +179,16 @@ define(function (require, exports, module) {
       if (!this.logElement) {
         this.logElement = this.$el.find('.stratum-proxy-view');
       }
-      this.logElement.append(this.model.get('log'));
+      var data = this.model.get('log');
+      if (typeof data === 'object') {
+        if (data.type && data.type.indexOf('Buffer') !== -1 && data.msg) {
+          data = data.msg;
+        } else {
+          data = JSON.stringify(data, null, 2);
+        }
+      }
+      data += '<BR>';
+      this.logElement.append(data);
       this.model.set('log', '', {
         silent: true
       });

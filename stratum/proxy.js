@@ -5,6 +5,15 @@
 var Stratum = require('stratum');
 var createServer = require('./server').create;
 var Q = require('q');
+var socket = require('../socket.io/main');
+var _ = require('underscore');
+var net = require('net');
+
+var qSocket = Q.defer();
+require('socket.io').listen(8081).on('connection', function (socket) {
+  console.log('Resolving socket io connection');
+  qSocket.resolve(socket);
+});
 
 exports.start = function (req, res) {
   if (!req.params.id) {
@@ -20,7 +29,8 @@ exports.start = function (req, res) {
             res.send(404,  {error: "Client ID not found"});
           } else {
             var c = clients[0];
-            exports.createProxy({
+
+            exports.createProxy2({
               server: {
                 user: p.user,
                 password: p.password,
@@ -31,7 +41,8 @@ exports.start = function (req, res) {
                 password: c.password,
                 host: c.host,
                 port: c.port,
-              }
+              },
+              webSocket: qSocket.promise
             });
 
             res.send(200);
@@ -42,76 +53,9 @@ exports.start = function (req, res) {
   }
 }
 
-var qSocket = Q.defer();
 
-require('../socket.io/main').on('connection', function (socket) {
-  console.log('received socket io connection');
-  qSocket.resolve(socket);
-});
-
-var createClient = function (options) {
-
-  console.log('inside createClient');
-
-  if (!(options && options.user && options.password && options.host && options.port && options.server)) {
-    throw new Error('invalid options: ' + options);
-  }
-  var clientDefer = Q.defer(), user = options.user, password = options.password, host = options.host, port = options.port, server = options.server;
-
-  var client = Stratum.Client.create();
-
-  console.log('-- error handler');
-
-//must be specified per EventEmitter requirements
-//  client.on('error', function(socket, arg2){
-//      console.log('fatal error: ' + JSON.stringify(arg2, null, 2));
-////    socket.destroy();
-////    console.log('Connection closed');
-////    process.exit(1);
-//  });
-//
-//  console.log('-- mining error handler');
-//
-//// this usually happens when we are not authorized to send commands (the server didn't allow us)
-//// or share was rejected
-//// Stratum errors are usually an array with 3 items [int, string, null]
-//  client.on('mining.error', function(msg, socket){
-//    console.log(msg);
-//  });
-//
-//  console.log('-- mining handler');
-//
-// the client is a one-way communication, it receives data from the server after issuing commands
-  client.on('mining', function(data, socket, type){
-    console.log('mining message received');
-    if (!socket.authorized){
-      console.log('Client sending authorization');
-      socket.stratumAuthorize(user, password);
-    } else {
-      console.log('Received data: ' + data);
-      qSocket.promise.then(function (socket) {
-        socket.emit('stratum.proxy.mining', data);
-      });
-      server.notify(data);
-    }
-
-  });
-
-  console.log('Creating stratum client connection at ' + host + ':' + port);
-
-//  client.connect({
-//    host: host,
-//    port: port
-//  }).then(function (socket){
-//
-//  ;
-
-}
-
-
-
-exports.createProxy = function (options) {
-  if (!(options && options.server && options.client)) {
+function optionsCheck(options) {
+  if (!(options && options.server && options.client && options.webSocket)) {
     throw new Error("Must include client and server options");
   }
 
@@ -124,8 +68,72 @@ exports.createProxy = function (options) {
   if (!(clientOpt.user && clientOpt.password && clientOpt.host && clientOpt.port)) {
     throw new Error('Must include required options to start stratum server.  Got: ' + JSON.stringify(clientOpt, null, 2));
   }
+}
+
+exports.createProxy2 = function (options) {
+  optionsCheck(options);
+
+  function emitToWebSocket(type, data) {
+    if (typeof webSocket.emit === 'function') {
+      console.log('emitting to websocket');
+      webSocket.emit(type, data);
+    }
+  }
+
+
+
+  var clientOpt = options.client, serverOpt = options.server;
+  var webSocket = options.webSocket;
+
+  if (typeof webSocket.then === 'function') {
+    console.log('webSocket promise detected');
+    webSocket.then(function (socket) {
+      console.log('webSocket ready');
+      webSocket = socket;
+      emitToWebSocket('stratum.proxy', 'Proxy started');
+    });
+  }
+
+  var server = net.createServer(function (c) {
+    c.on('end', function  () {
+
+    });
+
+    c.on('data', function (data) {
+      client.write(data);
+      emitToWebSocket('stratum.proxy', '<< Client ' + data.toString());
+    });
+
+    var client = net.connect({
+      port: clientOpt.port,
+      host: clientOpt.host
+    }, function () {
+      client.on('data', function (data) {
+        c.write(data);
+        emitToWebSocket('stratum.proxy', '>> Server ' + data.toString());
+      });
+
+      client.on('end', function () {
+        server.end();
+      });
+    });
+
+  });
+
+
+  server.listen(serverOpt.port, function () {
+
+  });
+
+
+}
+
+exports.createProxy = function (options) {
+  optionsCheck(options);
+  var clientOpt = options.client, serverOpt = options.server;
 
   var loadedDefer = Q.defer();
+  var webSocket = options.webSocket;
   var Server = Stratum.Server;
   var server = Server.create({
     settings: {
@@ -133,60 +141,95 @@ exports.createProxy = function (options) {
     }
   });
 
-  server.listen().then(function (msg){
+  if (typeof webSocket.then === 'function') {
+    console.log('webSocket promise detected');
+    webSocket.then(function (socket) {
+      console.log('webSocket ready');
+      webSocket = socket;
+      emitToWebSocket('stratum.proxy', 'Proxy started');
+    });
+  }
+
+
+
+  server.listen().then(function (msg) {
     console.log(msg);
     loadedDefer.resolve(server);
   });
-
 
 
   loadedDefer.promise.then(function (server) {
     console.log('Creating client');
     var client = Stratum.Client.create();
 
-    client.on('mining', function(data, socket, type) {
-      console.log('Mining data: ' + type + ' = ', data);
-      // you can issue more commands to the socket, it's the exact same socket as "client" variable
-      // in this example
+    var clientIdSocketMap = {
 
-      // the socket (client) got some fields like:
-      // client.name = name of the worker
-      // client.authorized = if the current connection is authorized or not
-      // client.id = an UUID ([U]niversal [U]nique [ID]entifier) that you can safely rely on it's uniqueness
-      // client.subscription = the subscription data from the server
-      switch (data.method) {
-        case 'set_difficulty':
-          // server sent the new difficulty
-          break;
-        case 'notify':
-          // server sent a new block
-          break;
-        default:
-          if (!socket.authorized){
-            console.log('Asking for authorization');
-            socket.stratumAuthorize(clientOpt.user,clientOpt.password);
-          } else {
-            console.log('Client received: ' + JSON.stringify(data, null, 2));
+    };
+
+    function clientForConnetion(socket) {
+
+      var subscribed;
+      var socketId = socket.id;
+      clientIdSocketMap[socketId] = socket;
+      server.on('close', function (socket) {
+        if (socketId === socket.id) {
+          server.off(socket);
+          clientIdSocketMap[socketId] = null;
+        }
+      });
+
+      server.on('mining', function (req, deferred) {
+        if (_.has(req, 'method')) {
+          if (req.method.indexOf('mining.') !== -1) {
+            var method = req.method.split('mining.')[0];
+            if (method === 'authorize') {
+              deferred.resolve([true]);
+            } else {
+              deferred.resolve(socket.stratumSend(req));
+            }
           }
-      }
-    });
-    var subscribed, authorized;
-    server.on('mining', function (req, deferred, socket) {
-      console.log('Server received mining request');
-      if (!subscribed) {
-        console.log('Creating client connection to ' + clientOpt.host + ':' + clientOpt.port);
-        client.connect({
-          host: clientOpt.host,
-          port: clientOpt.port
-        }).then(function (socket){
-            subscribed = true
-            console.log('Client connected to host');
-            socket.stratumSubscribe(req.params[0]).then(function (data) {
-              console.log('Client connected and subscribed with response: ' + JSON.stringify(data, null, 2));
-              deferred.resolve(data);
-            });
-          });
-      }
+        }
+      });
+
+      client.on('mining', function (type, serverSocker) {
+        console.log('Mining data: ' + type);
+        // you can issue more commands to the socket, it's the exact same socket as "client" variable
+        // in this example
+
+        // the socket (client) got some fields like:
+        // client.name = name of the worker
+        // client.authorized = if the current connection is authorized or not
+        // client.id = an UUID ([U]niversal [U]nique [ID]entifier) that you can safely rely on it's uniqueness
+        // client.subscription = the subscription data from the server
+
+        if (!socket.authorized) {
+          console.log('Asking for authorization');
+          socket.stratumAuthorize(clientOpt.user, clientOpt.password);
+        } else {
+          socket.stratumSend(req);
+          emitToWebSocket('stratum.proxy', req);
+        }
+      });
+
+      console.log('Client connected to host');
+      socket.stratumSubscribe('bfgminer/3.10.0').then(function (data) {
+        emitToWebSocket('stratum.proxy', data);
+      });
+
+      var self = {};
+
+      return self;
+    }
+
+
+    server.on('connection', function (socket) {
+      console.log('Creating client connection to ' + clientOpt.host + ':' + clientOpt.port);
+      client.connect({
+        host: clientOpt.host,
+        port: clientOpt.port
+      }).then(function (socket) {
+          clientForConnetion(socket);
+        });
     });
   });
-}
+};
