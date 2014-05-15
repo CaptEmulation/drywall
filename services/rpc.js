@@ -23,9 +23,24 @@ var rpcToWallet = {
       });
     });
   },
+  'getbestblockhash': function (wallet, options, callback) {
+    return wallet.getBestBlockHash(function (err, count) {
+      if (err) return callback(console.log(err));
+      return callback(err, {
+        bestBlockHash: count
+      });
+    });
+  },
+  'getblock': function (wallet, options, callback) {
+    var hash = options.arg1;
+    console.log('Hash is ' + hash);
+    return wallet.getBlock(hash, function (err, response) {
+      if (err) return callback(console.log(err));
+      return callback(err, response);
+    });
+  },
   'getblockcount': function (wallet, options, callback) {
     return wallet.getBlockCount(function (err, count) {
-      console.log(err + count);
       if (err) return callback(console.log(err));
       return callback(err, {
         blockCount: count

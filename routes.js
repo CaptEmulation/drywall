@@ -170,12 +170,15 @@ exports = module.exports = function(app, passport) {
 
 
   // Services
+  app.get('/sl/wallet/:id/:rpc/:arg1/:arg2', require('./services/rpc').init);
+  app.get('/sl/wallet/:id/:rpc/:arg1', require('./services/rpc').init);
   app.get('/sl/wallet/:id/:rpc', require('./services/rpc').init);
   app.get('/sl/wallet/?', require('./services/wallet').find);
   app.post('/sl/wallet/?', require('./services/wallet').create);
   app.put('/sl/wallet/:id', require('./services/wallet').update);
   app.delete('/sl/wallet/:id', require('./services/wallet').delete);
   app.get('/sl/wallet/:id', require('./services/wallet').read);
+  app.get('/sl/difficulty/:id', require('./services/difficulty').read).param('count');
 
   //route not found
   app.all('*', require('./views/http/index').http404);

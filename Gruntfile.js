@@ -15,6 +15,10 @@ module.exports = function(grunt) {
             src: ['backbone.js'], dest: 'public/vendor/backbone/'
           },
           {
+            expand: true, cwd: 'bower_components/d3/',
+            src: ['d3.js'], dest: 'public/vendor/d3/'
+          },
+          {
             expand: true, cwd: 'bower_components/font-awesome/',
             src: ['fonts/**', 'less/**'], dest: 'public/vendor/font-awesome/'
           },
@@ -29,6 +33,10 @@ module.exports = function(grunt) {
           {
             expand: true, cwd: 'bower_components/momentjs/',
             src: ['moment.js'], dest: 'public/vendor/momentjs/'
+          },
+          {
+            expand: true, cwd: 'bower_components/nvd3/',
+            src: ['src/**'], dest: 'public/vendor/nvd3/'
           },
           {
             expand: true, cwd: 'bower_components/respond/src/',
@@ -53,6 +61,7 @@ module.exports = function(grunt) {
       dev: {
         script: 'app.js',
         options: {
+          nodeArgs: ['-harmony'],
           ignore: [
             'node_modules/**',
             'public/**'

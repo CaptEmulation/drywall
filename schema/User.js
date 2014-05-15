@@ -1,5 +1,12 @@
 'use strict';
 
+var bcrypt;
+try {
+  bcrypt = require('bcrypt')
+} catch (e) {
+  bcrypt = require('isolated-bcrypt')
+}
+
 exports = module.exports = function(app, mongoose) {
   var userSchema = new mongoose.Schema({
     username: { type: String, unique: true },
@@ -42,7 +49,6 @@ exports = module.exports = function(app, mongoose) {
     return returnUrl;
   };
   userSchema.statics.encryptPassword = function(password, done) {
-    var bcrypt = require('bcrypt');
     bcrypt.genSalt(10, function(err, salt) {
       if (err) {
         return done(err);
@@ -54,7 +60,6 @@ exports = module.exports = function(app, mongoose) {
     });
   };
   userSchema.statics.validatePassword = function(password, hash, done) {
-    var bcrypt = require('bcrypt');
     bcrypt.compare(password, hash, function(err, res) {
       done(err, res);
     });
