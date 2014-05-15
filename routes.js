@@ -165,21 +165,17 @@ exports = module.exports = function(app, passport) {
   //coins
 //  app.all('/coins*', ensureAuthenticated);
 //  app.all('/coins*', ensureAccount);
-  app.get('/coins/?', require('./views/coins/index').init);
-  app.get('/coins/:id/edit/?', require('./views/coins/edit/index').init);
-  app.get('/coins/add/?', require('./views/coins/add/index').init);
-  app.get('/coins/table/?', require('./views/coins/table/index').init);
-  app.get('/coins/:id/delete/?', require('./views/coins/delete/index').init);
+  app.get('/wallet/?', require('./views/wallet/index').init);
 
 
   // Services
   app.get('/wallet/lbw/balance', require('./views/wallet/index').init);
-  app.get('/sl/coin/:id/:rpc', require('./services/rpc').init);
-  app.get('/sl/coins/?', require('./services/coins').find);
-  app.post('/sl/coins/?', require('./services/coins').create);
-  app.put('/sl/coins/:id', require('./services/coins').update);
-  app.delete('/sl/coins/:id', require('./services/coins').delete);
-  app.get('/sl/coins/:id', require('./services/coins').read);
+  app.get('/sl/wallet/:id/:rpc', require('./services/rpc').init);
+  app.get('/sl/wallet/?', require('./services/wallet').find);
+  app.post('/sl/wallet/?', require('./services/wallet').create);
+  app.put('/sl/wallet/:id', require('./services/wallet').update);
+  app.delete('/sl/wallet/:id', require('./services/wallet').delete);
+  app.get('/sl/wallet/:id', require('./services/wallet').read);
 
   //route not found
   app.all('*', require('./views/http/index').http404);

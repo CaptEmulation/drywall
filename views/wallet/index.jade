@@ -1,23 +1,85 @@
-extends ../../layouts/account
-
+extends ../../layouts/coin
 block head
-  title Account Area
-
+  title Wallet Area
 block neck
   link(rel='stylesheet', href='/views/wallet/index.min.css?#{cacheBreaker}')
-
 block feet
-  script(src='/views/wallet/index.min.js?#{cacheBreaker}')
-
 block body
   div.row
-    div.col-sm-6
+    div.col-lg-14
       div.page-header
-        h1 My Wallet
+        h1 Wallets
       div.row
-        div.col-sm-4
-          div.well.stat
-            div.stat-value.balance --
-            div.stat-label Balance
+        div.col-lg-6.wallet-table
+  div.row.modal-container
 
 
+  script(type='text/template', id='tmpl-_wallet-row')
+    td.cell.code
+      !='<%=shortName%>'
+    td.cell
+      !='<%=fullName%>'
+    td.cell
+      !='<%=host%>'
+    td.cell
+      !='<%=port%>'
+    td
+      span.cell.btn.btn-primary.edit(data-coin-id=_id) Edit
+      span.cell.btn.btn-primary.float-left.delete(data-coin-id=_id) Delete
+
+  script(type='text/template', id='tmpl-_wallet-table')
+    th.cell.h3.text-center Code
+    th.cell.h3.text-center Name
+    th.cell.h3.text-center Host
+    th.cell.h3.text-center Port
+    th.cell.h3.text-center Actions
+
+  script(type='text/template', id='tmpl-_wallet-add-button')
+    span.cell.btn.add.btn-primary Add
+
+  script(type='text/template', id='tmpl-_wallet-edit-form')
+    form.form-horizontal(role="form")
+      .form-group
+        label.col-sm-4.control-label(for="coin-short-name") Abbreviation
+        .col-sm-8
+          input#coin-short-name.form-control(type="text", value!='<%-obj.shortName%>')
+      .form-group
+        label.col-sm-4.control-label(for="coin-name") Name
+        .col-sm-8
+          input#coin-name.form-control(type="text", value!='<%=obj.fullName%>')
+      .form-group
+        label.col-sm-4.control-label(for="coin-host") Hostname
+        .col-sm-8
+          input#coin-host.form-control(type="text", value!='<%=obj.host%>')
+      .form-group
+        label.col-sm-4.control-label(for="coin-port") Port
+        .col-sm-8
+          input#coin-port.form-control(type="number", value!='<%=obj.port%>')
+      .form-group
+        label.col-sm-4.control-label(for="coin-rpc-user") RPC User
+        .col-sm-8
+          input#coin-rpc-user.form-control(type="text", value!='<%=obj.rpcUser%>')
+      .form-group
+        label.col-sm-4.control-label(for="coin-rpc-password") RPC Password
+        .col-sm-8
+          input#coin-rpc-password.form-control(type="text", value!='<%=obj.rpcPassword%>')
+
+  script(type='text/template', id='tmpl-_wallet-delete-content')
+    != "<%= 'This will complete remove ' + obj.fullName + ' wallet from the system.  There is no undo for this delete.  Are you sure you want to delete ' + obj.fullName + '?' %>"
+
+  script(type='text/template', id='tmpl-_wallet-crud-modal')
+    #coin-add-modal.modal.fade(tabindex="-1", role="dialog", aria-labelledby="myModalLabel", aria-hidden="true")
+      .modal-dialog
+        .modal-content
+          .modal-header
+            button.close(id="myModalLabel", type="button", data-dismiss="modal", aria-hidden="true") &times;
+            h4.modal-title
+              !='<%=obj.title%>'
+          .modal-body
+            !="<%=obj.content%>"
+          .modal-footer
+            .col-sm-offset-2.col-sm-10
+              button.cell.btn.btn-primary.submit(type="submit")
+                !='<%=obj.submitButtonName%>'
+              button.cell.btn.btn-default.float-left(type="button", data-dismiss="modal")
+                !='<%= obj.cancelButtonName %>'

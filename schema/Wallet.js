@@ -1,7 +1,7 @@
 'use strict';
 
 exports = module.exports = function(app, mongoose) {
-  var coinSchema = new mongoose.Schema({
+  var walletSchema = new mongoose.Schema({
     port: { type: Number, default: 8336 },
     host: { type: String, default: 'localhost' },
     fullName: { type: String, default: '' },
@@ -9,5 +9,5 @@ exports = module.exports = function(app, mongoose) {
     rpcUser: { type: String, default: '' },
     rpcPassword: { type: String, default: '' }
   });
-  app.db.model('Coin', coinSchema);
+  app.db.model('Wallet', walletSchema);
 };
