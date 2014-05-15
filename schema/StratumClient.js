@@ -18,7 +18,7 @@ exports = module.exports = function(app, mongoose) {
   });
   clientSchema.static({
     qFind: function (attributes) {
-      return Q.nbind(this.find, this)(attributes);
+      return Q.denodeify(this.find, this)(attributes);
     }
   });
   app.db.model(_NAME, clientSchema);

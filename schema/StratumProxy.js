@@ -18,7 +18,7 @@ exports = module.exports = function(app, mongoose) {
 
   proxySchema.static({
     qFind: function (attributes) {
-      return Q.nbind(this.find, this)(attributes);
+      return Q.denodeify(this.find, this)(attributes);
     }
   });
 

@@ -3,7 +3,7 @@
  */
 
 var Q = require('q');
-var Stratum = require('stratum');
+var net = require('net');
 
 var once = exports.onceThen = function (first, then) {
   var run = false;
@@ -16,7 +16,98 @@ var once = exports.onceThen = function (first, then) {
   }
 }
 
+function paramsMatchServerPassword(data, serverModel) {
+  return !(data.params[0].indexOf(serverModel.user) || serverModel.user.indexOf(data.params[0])
+    || data.params[1].indexOf(serverModel.password) || serverModel.password.indexOf(data.params[1]));
+}
+
+var parseJson = function (str) {
+  var json;
+  try {
+    json = JSON.parse(str);
+  } catch (e) {
+    console.log('Not able to parse: ' + str + ' due to: ' + e.message + ':' + e.stack);
+  }
+  return json || {};
+};
+
+var miningAuthorized = function (client, serverModel, target, defer) {
+  return function (str) {
+
+    var data = parseJson(str);
+    if (data && !defer.isFulfilled && data.method && data.method.indexOf('mining.authorize') !== -1) {
+      if (data.params && Array.isArray(data.params) && paramsMatchServerPassword(data, serverModel)) {
+        client.write(JSON.stringify({
+          id: data.id,
+          error: "null",
+          "result": true
+        }) + '\n');
+        defer.resolve();
+        return;
+      }
+      client.write(JSON.stringify({
+        id: data.id,
+        error: "not authorized",
+        "result": false
+      }) + '\n');
+      client.end();
+      defer.reject();
+    } else {
+      target.write(str);
+    }
+
+  }
+};
+
 exports.create = function (options) {
+
+  if (!(options && options.server && options.target)) {
+    throw new Error("Must include required options to start stratum server.  Got: " + options);
+  }
+  var target = options.target;
+  var defer = Q.defer();
+
+  var server = net.createServer(function (client) {
+    var authorizedDefer = Q.defer();
+    var authorizationHandler = miningAuthorized(client, options.server, target, authorizedDefer);
+
+    client.on('end', function () {
+
+    });
+
+    client.on('data', function (data) {
+
+      if (authorizedDefer.isFulfilled) {
+        target.write(data);
+      } else {
+        authorizationHandler(data);
+      }
+
+    });
+    defer.resolve(self);
+  });
+
+  target.on('data', function (data) {
+    server.write(data);
+  });
+
+  var self = {
+    listen: function () {
+
+      var defer = Q.defer();
+      server.listen(options.server.port, function () {
+        defer.resolve(server);
+      });
+      return defer.promise;
+    },
+    server: server,
+    loaded: defer.promise
+  };
+
+  return defer.promise;
+};
+
+exports.create2 = function (options) {
   if (!(options && options.port && options.user && options.password)) {
     throw new Error("Must include required options to start stratum server.  Got: " + options);
   }

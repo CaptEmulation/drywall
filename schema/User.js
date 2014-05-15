@@ -1,11 +1,7 @@
 'use strict';
 
-var bcrypt;
-try {
-  bcrypt = require('bcrypt');
-} catch (e) {
-  bcrypt = require('bcrypt-nodejs');
-}
+var bcrypt = require('bcrypt');
+
 
 exports = module.exports = function(app, mongoose) {
   var userSchema = new mongoose.Schema({

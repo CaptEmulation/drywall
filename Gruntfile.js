@@ -65,7 +65,6 @@ module.exports = function(grunt) {
       dev: {
         script: 'app.js',
         options: {
-          nodeArgs: ['-harmony'],
           ignore: [
             'node_modules/**',
             'public/**'
@@ -208,6 +207,15 @@ module.exports = function(grunt) {
         src: ['public/vendor/**']
       }
     },
+    // Configure a mochaTest task
+    mochaTest: {
+      test: {
+        options: {
+          reporter: 'spec'
+        },
+        src: ['{stratum,public,views,wallet,service}/**/test/**/*.js']
+      }
+    },
     '--': '$(ps aux | grep "node app.js" | grep -v "grep"); kill -s USR1 $2'
   });
 
@@ -220,8 +228,9 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-concurrent');
   grunt.loadNpmTasks('grunt-nodemon');
   grunt.loadNpmTasks('grunt-newer');
+  grunt.loadNpmTasks('grunt-mocha-test');
 
-  grunt.registerTask('default', ['copy:vendor', 'newer:uglify', 'newer:less', 'concurrent']);
+  grunt.registerTask('default', ['copy:vendor', 'newer:uglify', 'newer:less', 'concurrent', 'mochaTest']);
   grunt.registerTask('build', ['copy:vendor', 'uglify', 'less']);
   grunt.registerTask('lint', ['jshint']);
 };

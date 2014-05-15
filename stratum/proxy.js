@@ -21,17 +21,16 @@ exports.init = (function () {
 
   return function (db) {
     mediator = mediator || exports.stratumMediator(db.model('StratumClient'));
-
-    Q.spawn(function *() {
-      var clientModel = db.model('StratumClient'), proxyModel = db.model('StratumProxy');
-      var stratumClient, stratumProxy = yield proxyModel.qFind({});
-      if (stratumProxy.length) {
-        stratumProxy = stratumProxy[0];
+    var clientModel = db.model('StratumClient'), proxyModel = db.model('StratumProxy');
+    proxyModel.qFind({}).then(function (stratumProxies) {
+      var stratumClient;
+      if (stratumProxies.length) {
+        var stratumProxy = stratumProxies[0];
         mediator.addServer(stratumProxy);
       }
     });
   };
-}())
+}());
 
 
 exports.start = function (req, res) {
@@ -74,42 +73,40 @@ exports.start = function (req, res) {
 
 exports.stratumMediator = function (clientModel) {
 
-  var stratumClientModels, stratumClientSockets = [], stratumServers = {};
-  Q.spawn(function *() {
-    stratumClientModels = yield clientModel.qFind({});
-  });
-
+  var stratumClientModelsPromise = clientModel.qFind({}), stratumClientSockets = [], stratumServers = {};
 
   var self = {
     connect: function (incomingSocket, stratumServerModel) {
-      if (!stratumClientModels.length) {
-        incomingSocket.end()
-        return;
-      }
-      var sc = stratumClientModels[0];
-      var client = net.connect({
-        port: sc.port,
-        host: sc.host
-      }, function () {
-        client.on('data', function (data) {;
-          incomingSocket.write(data);
+      stratumClientModelsPromise.then(function (stratumClientModels) {
+        if (!stratumClientModels.length) {
+          incomingSocket.end()
+          return;
+        }
+        var sc = stratumClientModels[0];
+        var client = net.connect({
+          port: sc.port,
+          host: sc.host
+        }, function () {
+          client.on('data', function (data) {;
+            incomingSocket.write(data);
+          });
+
+          client.on('end', function () {
+            incomingSocket.end();
+          });
+        });
+        incomingSocket.on('end', function  () {
+          client.end();
         });
 
-        client.on('end', function () {
-          incomingSocket.end();
+        incomingSocket.on('data', function (data) {
+          client.write(data);
         });
-      });
-      incomingSocket.on('end', function  () {
-        client.end();
-      });
 
-      incomingSocket.on('data', function (data) {
-        client.write(data);
+        console.log('Proxy from ' + stratumServerModel.toUrl() + ' to ' + sc.toUrl() + ' initializing');
+
+        stratumClientSockets.push(incomingSocket);
       });
-
-      console.log('Proxy from ' + stratumServerModel.toUrl() + ' to ' + sc.toUrl() + ' initializing');
-
-      stratumClientSockets.push(incomingSocket);
     },
 
     addServer: function (stratumServerModel) {

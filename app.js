@@ -8,8 +8,7 @@ var config = require('./config'),
     path = require('path'),
     passport = require('passport'),
     mongoose = require('mongoose'),
-    helmet = require('helmet'),
-    restify = require('restify');
+    helmet = require('helmet');
 
 //create express app
 var app = express();
@@ -119,6 +118,9 @@ app.utility = {};
 app.utility.sendmail = require('drywall-sendmail');
 app.utility.slugify = require('drywall-slugify');
 app.utility.workflow = require('drywall-workflow');
+
+// Start stratum
+require('./stratum/controller').start(app);
 
 // Drastic error reporting
 process.on('uncaughtException', function (err) {
