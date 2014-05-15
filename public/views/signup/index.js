@@ -1,11 +1,13 @@
 /* global app:true */
 
-(function() {
+define(function (require, exports, module) {
   'use strict';
 
-  app = app || {};
+  var Backbone = require('backbone');
+  var $ = require('jquery');
+  var _ = require('underscore');
 
-  app.Signup = Backbone.Model.extend({
+  var Signup = exports.Signup = Backbone.Model.extend({
     url: '/signup/',
     defaults: {
       errors: [],
@@ -16,7 +18,7 @@
     }
   });
 
-  app.SignupView = Backbone.View.extend({
+  var SignUpView = exports.SignupView = Backbone.View.extend({
     el: '#signup',
     template: _.template( $('#tmpl-signup').html() ),
     events: {
@@ -25,7 +27,7 @@
       'click .btn-signup': 'signup'
     },
     initialize: function() {
-      this.model = new app.Signup();
+      this.model = new Signup();
       this.listenTo(this.model, 'sync', this.render);
       this.render();
     },
@@ -63,6 +65,6 @@
   });
 
   $(document).ready(function() {
-    app.signupView = new app.SignupView();
+    var signupView = new exports.SignupView();
   });
-}());
+});

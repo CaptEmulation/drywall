@@ -158,17 +158,22 @@ exports = module.exports = function(app, passport) {
   app.get('/account/settings/facebook/disconnect/', require('./views/account/settings/index').disconnectFacebook);
 
   //account
-//  app.all('/wallet*', ensureAuthenticated);
-//  app.all('/wallet*', ensureAccount);
+  app.all('/wallet*', ensureAuthenticated);
+  app.all('/wallet*', ensureAccount);
   app.get('/wallet/?', require('./views/wallet/index').init);
   app.get('/wallet/:id/stat/?', require('./views/wallet/stat/index').init);
 
   //coins
-//  app.all('/coins*', ensureAuthenticated);
-//  app.all('/coins*', ensureAccount);
+  app.all('/coins*', ensureAuthenticated);
+  app.all('/coins*', ensureAccount);
   app.get('/coins/?', require('./views/coins/index').init);
-
   app.get('/chart/difficulty/:id', require('./views/chart/difficulty/index').init);
+
+  //stratum
+  app.all('/stratum*', ensureAuthenticated);
+  app.all('/stratum*', ensureAccount);
+  app.get('/stratum/?', require('./views/stratum/index').init);
+
 
   // Services
   app.get('/sl/wallet/:id/:rpc/:arg1/:arg2', require('./services/rpc').init);
@@ -180,6 +185,17 @@ exports = module.exports = function(app, passport) {
   app.delete('/sl/wallet/:id', require('./services/wallet').delete);
   app.get('/sl/wallet/:id', require('./services/wallet').read);
   app.get('/sl/difficulty/:id', require('./services/difficulty').readBatch);
+  app.get('/sl/stratum/start', require('./services/stratum').start);
+  app.get('/sl/stratum/stop', require('./services/stratum').start);
+  app.get('/sl/stratum/client/?', require('./stratum/service').client.find);
+  app.post('/sl/stratum/client/?', require('./stratum/service').client.create);
+  app.put('/sl/stratum/client/:id', require('./stratum/service').client.update);
+  app.delete('/sl/stratum/client/:id', require('./stratum/service').client.delete);
+  app.get('/sl/stratum/proxy/?', require('./stratum/service').proxy.find);
+  app.post('/sl/stratum/proxy/?', require('./stratum/service').proxy.create);
+  app.put('/sl/stratum/proxy/:id', require('./stratum/service').proxy.update);
+  app.delete('/sl/stratum/proxy/:id', require('./stratum/service').proxy.delete);
+  app.get('/sl/stratum/proxy/:id/start/?', require('./stratum/proxy').start);
 
   //route not found
   app.all('*', require('./views/http/index').http404);

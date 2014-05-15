@@ -1,0 +1,121 @@
+extends ../../layouts/stratum
+
+block head
+  title Stratum
+block neck
+  link(rel='stylesheet', href='/views/stratum/index.min.css?#{cacheBreaker}')
+block feet
+block body
+  .row
+    .col-lg-14
+      .page-header
+        h1 Stratum
+      .row.tool-bar
+        .col-lg-8.stratum-control
+        .col-lg-2.stratum-control-status
+      .page-header
+        h2 Clients
+      .row.stratum-client
+      .page-header
+        H2 Proxy
+      .row.stratum-proxy
+
+  script(type='text/template', id='tmpl-_stratum-control')
+    a.btn.btn-primary.btn-large.stratum-control-button
+      i.icon-white.icon-off
+      !='<%=obj.start%>'
+
+  script(type='text/template', id='tmpl-_stratum-control-status')
+    h3
+      !='<%=obj.status%>'
+
+  script(type='text/template', id='tmpl-_stratum-client-add')
+    div.col-lg-12.stratum-client-add
+      a.btn.btn-primary.btn-large.stratum-client-add-button
+        i.icon-white.icon-add
+        !=tr.add
+
+  script(type='text/template', id='tmpl-_stratum-client-row')
+    .col-lg-3.stratum-client-host
+      !='<%=obj.host%>'
+    .col-lg-2.stratum-client-port
+      !='<%=obj.port%>'
+    .col-lg-3.stratum-client-user
+      !='<%=obj.user%>'
+    .col-lg-2.stratum-client-password
+      !='<%=obj.password%>'
+    .col-sm-1
+      a.btn.stratum-client-edit Edit
+    .col-sm-1
+      a.btn.stratum-client-delete Delete
+
+  script(type='text/template', id='tmpl-_stratum-client-row-form')
+    .col-lg-3
+      input.form-control#stratum-client-add-host(type="text", placeholder="host", value!='<%-obj.host%>')
+    .col-lg-2
+      input.form-control#stratum-client-add-port(type="number", placeholder="3333", value!='<%-obj.port%>')
+    .col-lg-3
+      input.form-control#stratum-client-add-user(type="text", placeholder="username", value!='<%-obj.user%>')
+    .col-lg-2
+      input.form-control#stratum-client-add-password(type="text", placeholder="password", value!='<%-obj.password%>')
+    .col-sm-1
+      a.btn.btn-primary.stratum-client-save Save
+    .col-sm-1
+      a.btn.stratum-client-cancel Cancel
+
+  script(type='text/template', id='tmpl-_stratum-proxy-row-header')
+    .col-sm-1
+    .col-lg-3
+      h4 Connect to
+    .col-lg-2
+      h4 Port
+    .col-lg-2
+      h4 User
+    .col-lg-2
+      h4 Password
+
+  script(type='text/template', id='tmpl-_stratum-proxy-row')
+    .col-sm-1
+      a.btn.stratum-proxy-view View
+    .col-lg-3.stratum-proxy-client
+      !='<%=obj.clientDescription%>'
+    .col-lg-2.stratum-proxy-port
+      !='<%=obj.port%>'
+    .col-lg-2.stratum-proxy-user
+      !='<%=obj.user%>'
+    .col-lg-2.stratum-proxy-password
+      !='<%=obj.password%>'
+    .col-sm-1
+      a.btn.stratum-proxy-edit Edit
+    .col-sm-1
+      a.btn.stratum-proxy-delete Delete
+
+  script(type='text/template', id='tmpl-_stratum-proxy-add')
+    div.col-lg-12.stratum-proxy-add
+      a.btn.btn-primary.btn-large.stratum-proxy-add-button
+        i.icon-white.icon-add
+        !=tr.add
+
+  script(type='text/template', id='tmpl-_stratum-proxy-row-form')
+    .col-lg-4.stratum-proxy-client-field
+    .col-lg-2
+      input.form-control#stratum-proxy-add-port(type="number", placeholder="3333", value!='<%-obj.port%>')
+    .col-lg-2
+      input.form-control#stratum-proxy-add-user(type="text", placeholder="username", value!='<%-obj.user%>')
+    .col-lg-2
+      input.form-control#stratum-proxy-add-password(type="text", placeholder="password", value!='<%-obj.password%>')
+    .col-sm-1
+      a.btn.btn-primary.stratum-proxy-save Save
+    .col-sm-1
+      a.btn.stratum-client-cancel Cancel
+
+  script(type='text/template', id='tmpl-_stratum-proxy-row-form-client-field')
+    !='<%=obj.client%>'
+
+  script(type='text/template', id='tmpl-_stratum-proxy-view')
+    .col-lg-12
+      .page-header
+        h3
+          !='<%=obj.client%>'
+      .well-lg
+        code.code.stratum-proxy-view

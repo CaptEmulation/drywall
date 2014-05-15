@@ -14,4 +14,6 @@ exports = module.exports = function(app, mongoose) {
   require('./schema/Account')(app, mongoose);
   require('./schema/LoginAttempt')(app, mongoose);
   require('./schema/Wallet.js')(app, mongoose);
+  require('./schema/StratumClient.js')(app, mongoose);
+  require('./schema/StratumProxy.js')(app, mongoose);
 };

@@ -45,6 +45,10 @@ module.exports = function(grunt) {
           {
             expand: true, cwd: 'bower_components/underscore/',
             src: ['underscore.js'], dest: 'public/vendor/underscore/'
+          },
+          {
+            expand: true, cwd: 'bower_components/socket.io-client/',
+            src: ['dist/**'], dest: 'public/vendor/socket.io/'
           }
         ]
       }

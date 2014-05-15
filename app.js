@@ -120,6 +120,11 @@ app.utility.sendmail = require('drywall-sendmail');
 app.utility.slugify = require('drywall-slugify');
 app.utility.workflow = require('drywall-workflow');
 
+// Drastic error reporting
+process.on('uncaughtException', function (err) {
+  console.log('Caught exception: ' + err);
+});
+
 //listen up
 app.server.listen(app.get('port'), function(){
   //and... we're live

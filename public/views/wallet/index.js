@@ -1,11 +1,5 @@
 
 
-require.config({
-  paths:{
-    'wallet': window.app.baseUrl + 'views/wallet'
-  }
-});
-
 define(function (require, exports, module) {
   'use strict';
 

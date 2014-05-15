@@ -2,9 +2,9 @@
 
 var bcrypt;
 try {
-  bcrypt = require('bcrypt')
+  bcrypt = require('bcrypt');
 } catch (e) {
-  bcrypt = require('isolated-bcrypt')
+  bcrypt = require('bcrypt-nodejs');
 }
 
 exports = module.exports = function(app, mongoose) {
@@ -53,8 +53,7 @@ exports = module.exports = function(app, mongoose) {
       if (err) {
         return done(err);
       }
-
-      bcrypt.hash(password, salt, function(err, hash) {
+      bcrypt.hash(password, salt, null, function(err, hash) {
         done(err, hash);
       });
     });
