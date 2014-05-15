@@ -12,8 +12,7 @@ exports.init = function(req, res) {
       baseUrl: "../../",
       data: {
         walletId: req.params.id
-      },
-      walletId: req.params.id
+      }
     }
   });
 };

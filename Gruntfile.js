@@ -36,7 +36,7 @@ module.exports = function(grunt) {
           },
           {
             expand: true, cwd: 'bower_components/nvd3/',
-            src: ['src/**'], dest: 'public/vendor/nvd3/'
+            src: ['*.js', '*.css', 'src/**'], dest: 'public/vendor/nvd3/'
           },
           {
             expand: true, cwd: 'bower_components/respond/src/',

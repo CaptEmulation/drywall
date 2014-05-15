@@ -1,0 +1,17 @@
+extends ../../layouts/coin
+
+block head
+  title Difficulty
+
+block neck
+  link(rel='stylesheet', href='/views/coins/index.min.css?#{cacheBreaker}')
+
+block feet
+
+block body
+  div.row
+    div.col-lg-14
+      div.page-header
+        h1 Difficulty
+      div.row.coin-balances
+        #chart.div.col-lg-8

@@ -168,6 +168,7 @@ exports = module.exports = function(app, passport) {
 //  app.all('/coins*', ensureAccount);
   app.get('/coins/?', require('./views/coins/index').init);
 
+  app.get('/chart/difficulty/:id', require('./views/chart/difficulty/index').init);
 
   // Services
   app.get('/sl/wallet/:id/:rpc/:arg1/:arg2', require('./services/rpc').init);
@@ -178,7 +179,7 @@ exports = module.exports = function(app, passport) {
   app.put('/sl/wallet/:id', require('./services/wallet').update);
   app.delete('/sl/wallet/:id', require('./services/wallet').delete);
   app.get('/sl/wallet/:id', require('./services/wallet').read);
-  app.get('/sl/difficulty/:id', require('./services/difficulty').read).param('count');
+  app.get('/sl/difficulty/:id', require('./services/difficulty').readBatch);
 
   //route not found
   app.all('*', require('./views/http/index').http404);

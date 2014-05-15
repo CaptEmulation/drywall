@@ -9,15 +9,19 @@ define(function (require, exports, moudle) {
 
 
 
+  var DifficultyGraph = exports.DifficultGraph = Backbone.View.extend({
 
+    el: $('#chart'),
 
+    initialize: function (options) {
+      this.data = options.data;
+      Backbone.View.prototype.initialize.apply(this, arguments);
+    },
 
-
-  var DifficultyGraph = Backbone.View.extend({
 
     render: function () {
       nv.addGraph(function() {
-        var chart = nv.models.lineWithFocusChart();
+        var chart = nv.models.lineWithFocusChart().width(this.$el.width()).height(this.$el.height());
 
         // chart.transitionDuration(500);
         chart.xAxis
@@ -30,14 +34,14 @@ define(function (require, exports, moudle) {
         chart.y2Axis
           .tickFormat(d3.format(',.2f'));
 
-        d3.select('#chart svg')
-          .datum(testData())
+        d3.select('#chart')
+          .datum(this.data)
           .call(chart);
 
         nv.utils.windowResize(chart.update);
 
         return chart;
-      });
+      }.bind(this));
 
       return this;
     }

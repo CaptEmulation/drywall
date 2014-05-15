@@ -13,6 +13,7 @@ define(function (require, exports, module) {
   var $ = require('jquery');
   var _ = require('underscore');
   var rpc = require('wallet/stat/rpc');
+  var DifficultyGraph = require('chart/difficulty/graph').DifficultGraph;
 
   var walletId = window.app.data.walletId;
 
@@ -63,6 +64,27 @@ define(function (require, exports, module) {
       });
 
       $('.stat-content').html(table.render().$el);
+
+      $.ajax({
+        url: window.app.baseUrl + 'sl/difficulty/' + walletId,
+        data: {
+          count: statModel.get('blockcount'),
+          step: ~~(statModel.get('blockcount') / 1000)
+        }
+      }).then(function (response) {
+          var data = [{
+            key: 'Difficulty',
+            values: response,
+          }];
+
+          var difficultyGraph = new DifficultyGraph({
+            data: data
+          });
+          difficultyGraph.render();
+        });
     }
   }()));
+
+
+
 });
