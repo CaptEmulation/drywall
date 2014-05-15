@@ -4,7 +4,10 @@ block head
   title Forgot Your Password?
 
 block feet
-  script(src='/views/login/forgot/index.min.js?#{cacheBreaker}')
+  script
+    != 'window.app = window.app || {};'
+    != 'window.app.main = "views/login/forgot/index";'
+    != 'window.app.baseUrl = "../../"'
 
 block body
   div.row

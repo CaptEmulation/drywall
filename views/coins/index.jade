@@ -1,16 +1,12 @@
-extends ../../layouts/account
+extends ../../layouts/coin
 
 block head
-  title Account Area
+  title Wallet Area
 
 block neck
   link(rel='stylesheet', href='/views/coins/index.min.css?#{cacheBreaker}')
 
 block feet
-  script
-    != 'window.app = window.app || {};'
-    != 'window.app.main = \'views/coins/index\';'
-
 
 block body
   div.row
@@ -23,12 +19,11 @@ block body
         div.col-lg-6.coin-table
   div.row.modal-content
 
-
-
-  script(type='text/template', id='tmpl-_coin-balance-grid')
-    div.col-sm-4
+  script(type='text/template', id='tmpl-_coin-balance-row')
+    div.row
 
   script(type='text/template', id='tmpl-_coin-balance-cell')
-    div.well.stat
+    div.well.stat.div.col-sm-4
       div.stat-value --
-      div.stat-label !='<% fullName %>'
+      div.stat-label
+        !='<%= obj.fullName %>'

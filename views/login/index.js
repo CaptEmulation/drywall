@@ -18,7 +18,11 @@ exports.init = function(req, res){
       oauthMessage: '',
       oauthTwitter: !!req.app.get('twitter-oauth-key'),
       oauthGitHub: !!req.app.get('github-oauth-key'),
-      oauthFacebook: !!req.app.get('facebook-oauth-key')
+      oauthFacebook: !!req.app.get('facebook-oauth-key'),
+      appDef: {
+        main: "views/login/index",
+        baseUrl: "../"
+      }
     });
   }
 };

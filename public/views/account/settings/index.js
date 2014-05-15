@@ -1,21 +1,25 @@
 /* global app:true */
 
-(function() {
+/* global app:true */
+
+define(function (require, exports, module) {
   'use strict';
 
-  app = app || {};
+  var Backbone = require('backbone');
+  var $ = require('jquery');
+  var _ = require('underscore');
 
-  app.Account = Backbone.Model.extend({
+  exports.Account = Backbone.Model.extend({
     idAttribute: '_id',
     url: '/account/settings/'
   });
 
-  app.User = Backbone.Model.extend({
+  exports.User = Backbone.Model.extend({
     idAttribute: '_id',
     url: '/account/settings/'
   });
 
-  app.Details = Backbone.Model.extend({
+  exports.Details = Backbone.Model.extend({
     idAttribute: '_id',
     defaults: {
       success: false,
@@ -31,7 +35,7 @@
     url: '/account/settings/',
     parse: function(response) {
       if (response.account) {
-        app.mainView.account.set(response.account);
+        exports.mainView.account.set(response.account);
         delete response.account;
       }
 
@@ -39,7 +43,7 @@
     }
   });
 
-  app.Identity = Backbone.Model.extend({
+  exports.Identity = Backbone.Model.extend({
     idAttribute: '_id',
     defaults: {
       success: false,
@@ -51,7 +55,7 @@
     url: '/account/settings/identity/',
     parse: function(response) {
       if (response.user) {
-        app.mainView.user.set(response.user);
+        exports.mainView.user.set(response.user);
         delete response.user;
       }
 
@@ -59,7 +63,7 @@
     }
   });
 
-  app.Password = Backbone.Model.extend({
+  exports.Password = Backbone.Model.extend({
     idAttribute: '_id',
     defaults: {
       success: false,
@@ -71,7 +75,7 @@
     url: '/account/settings/password/',
     parse: function(response) {
       if (response.user) {
-        app.mainView.user.set(response.user);
+        exports.mainView.user.set(response.user);
         delete response.user;
       }
 
@@ -79,28 +83,28 @@
     }
   });
 
-  app.DetailsView = Backbone.View.extend({
+  exports.DetailsView = Backbone.View.extend({
     el: '#details',
     template: _.template( $('#tmpl-details').html() ),
     events: {
       'click .btn-update': 'update'
     },
     initialize: function() {
-      this.model = new app.Details();
+      this.model = new exports.Details();
       this.syncUp();
-      this.listenTo(app.mainView.account, 'change', this.syncUp);
+      this.listenTo(exports.mainView.account, 'change', this.syncUp);
       this.listenTo(this.model, 'sync', this.render);
       this.render();
     },
     syncUp: function() {
       this.model.set({
-        _id: app.mainView.account.id,
-        first: app.mainView.account.get('name').first,
-        middle: app.mainView.account.get('name').middle,
-        last: app.mainView.account.get('name').last,
-        company: app.mainView.account.get('company'),
-        phone: app.mainView.account.get('phone'),
-        zip: app.mainView.account.get('zip')
+        _id: exports.mainView.account.id,
+        first: exports.mainView.account.get('name').first,
+        middle: exports.mainView.account.get('name').middle,
+        last: exports.mainView.account.get('name').last,
+        company: exports.mainView.account.get('company'),
+        phone: exports.mainView.account.get('phone'),
+        zip: exports.mainView.account.get('zip')
       });
     },
     render: function() {
@@ -124,24 +128,24 @@
     }
   });
 
-  app.IdentityView = Backbone.View.extend({
+  exports.IdentityView = Backbone.View.extend({
     el: '#identity',
     template: _.template( $('#tmpl-identity').html() ),
     events: {
       'click .btn-update': 'update'
     },
     initialize: function() {
-      this.model = new app.Identity();
+      this.model = new exports.Identity();
       this.syncUp();
-      this.listenTo(app.mainView.user, 'change', this.syncUp);
+      this.listenTo(exports.mainView.user, 'change', this.syncUp);
       this.listenTo(this.model, 'sync', this.render);
       this.render();
     },
     syncUp: function() {
       this.model.set({
-        _id: app.mainView.user.id,
-        username: app.mainView.user.get('username'),
-        email: app.mainView.user.get('email')
+        _id: exports.mainView.user.id,
+        username: exports.mainView.user.get('username'),
+        email: exports.mainView.user.get('email')
       });
     },
     render: function() {
@@ -161,14 +165,14 @@
     }
   });
 
-  app.PasswordView = Backbone.View.extend({
+  exports.PasswordView = Backbone.View.extend({
     el: '#password',
     template: _.template( $('#tmpl-password').html() ),
     events: {
       'click .btn-password': 'password'
     },
     initialize: function() {
-      this.model = new app.Password({ _id: app.mainView.user.id });
+      this.model = new exports.Password({ _id: exports.mainView.user.id });
       this.listenTo(this.model, 'sync', this.render);
       this.render();
     },
@@ -189,20 +193,20 @@
     }
   });
 
-  app.MainView = Backbone.View.extend({
+  exports.MainView = Backbone.View.extend({
     el: '.page .container',
     initialize: function() {
-      app.mainView = this;
-      this.account = new app.Account( JSON.parse( unescape($('#data-account').html()) ) );
-      this.user = new app.User( JSON.parse( unescape($('#data-user').html()) ) );
+      exports.mainView = this;
+      this.account = new exports.Account( JSON.parse( unescape($('#data-account').html()) ) );
+      this.user = new exports.User( JSON.parse( unescape($('#data-user').html()) ) );
 
-      app.detailsView = new app.DetailsView();
-      app.identityView = new app.IdentityView();
-      app.passwordView = new app.PasswordView();
+      exports.detailsView = new exports.DetailsView();
+      exports.identityView = new exports.IdentityView();
+      exports.passwordView = new exports.PasswordView();
     }
   });
 
   $(document).ready(function() {
-    app.mainView = new app.MainView();
+    exports.mainView = new exports.MainView();
   });
-}());
+});

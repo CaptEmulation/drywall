@@ -1,11 +1,13 @@
 /* global app:true */
 
-(function() {
+define(function (require, exports, module) {
   'use strict';
 
-  app = app || {};
-
-  app.Forgot = Backbone.Model.extend({
+  var Backbone = require('backbone');
+  var $ = require('jquery');
+  var _ = require('underscore');
+  
+  exports.Forgot = Backbone.Model.extend({
     url: '/login/forgot/',
     defaults: {
       success: false,
@@ -15,7 +17,7 @@
     }
   });
 
-  app.ForgotView = Backbone.View.extend({
+  exports.ForgotView = Backbone.View.extend({
     el: '#forgot',
     template: _.template( $('#tmpl-forgot').html() ),
     events: {
@@ -24,7 +26,7 @@
       'click .btn-forgot': 'forgot'
     },
     initialize: function() {
-      this.model = new app.Forgot();
+      this.model = new exports.Forgot();
       this.listenTo(this.model, 'sync', this.render);
       this.render();
     },
@@ -51,6 +53,6 @@
   });
 
   $(document).ready(function() {
-    app.forgotView = new app.ForgotView();
+    exports.forgotView = new exports.ForgotView();
   });
-}());
+});

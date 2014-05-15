@@ -9,10 +9,15 @@ define(function (require, exports, module) {
 
 
   var CoinModel = exports.CoinModel = Backbone.Model.extend({
-    id: '_id'
+    id: '_id',
+
+    isStartOfRow: function () {
+      return this.collection.indexOf(this) % this.collection.width === 0;
+    }
   });
 
   var CoinCollection = exports.CoinCollection = Backbone.Collection.extend({
+    width: 4,
     model: CoinModel,
     url: '/sl/coins/'
   });
@@ -28,19 +33,27 @@ define(function (require, exports, module) {
     }
   });
 
+  var rowTemplate = _.template($('#tmpl-_coin-balance-row').html());
+
   var coinCollection = new CoinCollection();
   coinCollection.fetch().then(function () {
+
     var coinGrid = new CoinGrid({
-      el: $('div.coin-balances'),
       collection: coinCollection
     });
     coinGrid.on('before:item:added', (function () {
-
-      return function () {
-
+      var lastItemCount;
+      return function (item) {
+        var model = item.model;
+        var collection = model.collection;
+        var index = collection.indexOf(model);
+        if (index % 4 === 0) {
+          item.$el.addClass('row');
+        }
       };
     }()));
     coinGrid.render();
+    $('div.coin-balances').html(coinGrid.el);
   });
 
   (function() {

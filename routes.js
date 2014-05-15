@@ -158,13 +158,13 @@ exports = module.exports = function(app, passport) {
   app.get('/account/settings/facebook/disconnect/', require('./views/account/settings/index').disconnectFacebook);
 
   //account
-  app.all('/wallet*', ensureAuthenticated);
-  app.all('/wallet*', ensureAccount);
+//  app.all('/wallet*', ensureAuthenticated);
+//  app.all('/wallet*', ensureAccount);
   app.get('/wallet/', require('./views/wallet/index').init);
 
   //coins
-  app.all('/coins*', ensureAuthenticated);
-  app.all('/coins*', ensureAccount);
+//  app.all('/coins*', ensureAuthenticated);
+//  app.all('/coins*', ensureAccount);
   app.get('/coins/?', require('./views/coins/index').init);
   app.get('/coins/:id/edit/?', require('./views/coins/edit/index').init);
   app.get('/coins/add/?', require('./views/coins/add/index').init);

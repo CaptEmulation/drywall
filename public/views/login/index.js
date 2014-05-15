@@ -1,11 +1,13 @@
 /* global app:true */
 
-(function() {
+define(function (require, exports, module) {
   'use strict';
 
-  app = app || {};
+  var Backbone = require('backbone');
+  var $ = require('jquery');
+  var _ = require('underscore');
 
-  app.Login = Backbone.Model.extend({
+  exports.Login = Backbone.Model.extend({
     url: '/login/',
     defaults: {
       errors: [],
@@ -15,7 +17,7 @@
     }
   });
 
-  app.LoginView = Backbone.View.extend({
+  exports.LoginView = Backbone.View.extend({
     el: '#login',
     template: _.template( $('#tmpl-login').html() ),
     events: {
@@ -24,7 +26,7 @@
       'click .btn-login': 'login'
     },
     initialize: function() {
-      this.model = new app.Login();
+      this.model = new exports.Login();
       this.listenTo(this.model, 'sync', this.render);
       this.render();
     },
@@ -61,6 +63,6 @@
   });
 
   $(document).ready(function() {
-    app.loginView = new app.LoginView();
+    exports.loginView = new exports.LoginView();
   });
-}());
+});

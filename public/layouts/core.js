@@ -24,8 +24,8 @@
         loadFiles({
           //"css":"css/libs/bootstrap.css",
           // Change this to "js/app/config/DesktopInit.min" for production
-          "data-main":"../config/DesktopInit.js",
-          "requirejs":"../vendor/require/require.js"
+          "data-main": app.baseUrl + "config/DesktopInit.js",
+          "requirejs": app.baseUrl + "vendor/require/require.js"
         });
       }
 
