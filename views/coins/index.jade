@@ -7,7 +7,10 @@ block neck
   link(rel='stylesheet', href='/views/coins/index.min.css?#{cacheBreaker}')
 
 block feet
-  script(src='/views/coins/index.min.js?#{cacheBreaker}')
+  script
+    != 'window.app = window.app || {};'
+    != 'window.app.main = \'views/coins/index\';'
+
 
 block body
   div.row
@@ -22,10 +25,10 @@ block body
 
 
 
-script(type='text/template', id='tmpl-_coin-balance-grid')
-  div.col-sm-4
+  script(type='text/template', id='tmpl-_coin-balance-grid')
+    div.col-sm-4
 
-script(type='text/template', id='tmpl-_coin-balance-cell')
-  div.well.stat
-    div.stat-value --
-    div.stat-label !='<% stat %>'
+  script(type='text/template', id='tmpl-_coin-balance-cell')
+    div.well.stat
+      div.stat-value --
+      div.stat-label !='<% fullName %>'
