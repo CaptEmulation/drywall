@@ -3,8 +3,8 @@ Drywall
 
 A website and user system for Node.js. What you create with Drywall is more important than Drywall. [See a bird's eye view.](http://jedireza.github.io/drywall/)
 
-[![Dependency Status](https://david-dm.org/jedireza/drywall.png)](https://david-dm.org/jedireza/drywall)
-[![devDependency Status](https://david-dm.org/jedireza/drywall/dev-status.png)](https://david-dm.org/jedireza/drywall#info=devDependencies)
+[![Dependency Status](https://david-dm.org/jedireza/drywall.svg?theme=shields.io)](https://david-dm.org/jedireza/drywall)
+[![devDependency Status](https://david-dm.org/jedireza/drywall/dev-status.svg?theme=shields.io)](https://david-dm.org/jedireza/drywall#info=devDependencies)
 
 Technology
 ------------
@@ -46,6 +46,7 @@ We use [Bower](http://bower.io/) as our front-end package manager. Get the CLI (
 $ npm install bower -g
 ```
 
+We use [`bcrypt`](https://github.com/ncb000gt/node.bcrypt.js) for hashing secrets. If you have issues during installation related to `bcrypt` then [refer to this wiki page](https://github.com/jedireza/drywall/wiki/bcrypt-Installation-Trouble).
 
 Installation
 ------------
@@ -65,7 +66,10 @@ You need a few records in the database to start using the user system.
 Run these commands on mongo. __Obviously you should use your email address.__
 
 ```js
-use drywall;
+use drywall; //your mongo db name
+```
+
+```js
 db.admingroups.insert({ _id: 'root', name: 'Root' });
 db.admins.insert({ name: {first: 'Root', last: 'Admin', full: 'Root Admin'}, groups: ['root'] });
 var rootAdmin = db.admins.findOne();
@@ -100,12 +104,19 @@ Features
  - Basic front end web pages.
  - Contact page has form to email.
  - Login system with forgot password and reset password.
- - Signup and Login with Facebook, Twitter and GitHub.
+ - Signup and Login with Facebook, Twitter, GitHub, Google and Tumblr.
  - Optional email verification during signup flow.
  - User system with separate account and admin roles.
  - Admin groups with shared permission settings.
  - Administrator level permissions that override group permissions.
  - Global admin quick search component.
+
+Contributing
+------------
+
+Contributions welcome. Make sure your code passes `grunt lint` without error.
+
+If you're changing something non-trivial or user-facing, you may want to submit an issue first.
 
 License
 ------------

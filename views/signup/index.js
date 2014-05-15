@@ -7,9 +7,11 @@ exports.init = function(req, res){
   else {
     res.render('signup/index', {
       oauthMessage: '',
-      oauthTwitter: !!req.app.get('twitter-oauth-key'),
-      oauthGitHub: !!req.app.get('github-oauth-key'),
-      oauthFacebook: !!req.app.get('facebook-oauth-key'),
+      oauthTwitter: !!req.app.config.oauth.twitter.key,
+      oauthGitHub: !!req.app.config.oauth.github.key,
+      oauthFacebook: !!req.app.config.oauth.facebook.key,
+      oauthGoogle: !!req.app.config.oauth.google.key,
+      oauthTumblr: !!req.app.config.oauth.tumblr.key,
       appDef: {
         main: "views/signup/index",
         baseUrl: "../"
@@ -87,7 +89,7 @@ exports.signup = function(req, res){
         isActive: 'yes',
         username: req.body.username,
         email: req.body.email.toLowerCase(),
-        password: hash, 
+        password: hash,
         search: [
           req.body.username,
           req.body.email
@@ -97,7 +99,7 @@ exports.signup = function(req, res){
         if (err) {
           return workflow.emit('exception', err);
         }
-  
+
         workflow.user = user;
         workflow.emit('createAccount');
       });
@@ -106,7 +108,7 @@ exports.signup = function(req, res){
 
   workflow.on('createAccount', function() {
     var fieldsToSet = {
-      isVerified: req.app.get('require-account-verification') ? 'no' : 'yes',
+      isVerified: req.app.config.requireAccountVerification ? 'no' : 'yes',
       'name.full': workflow.user.username,
       user: {
         id: workflow.user._id,
@@ -136,16 +138,16 @@ exports.signup = function(req, res){
 
   workflow.on('sendWelcomeEmail', function() {
     req.app.utility.sendmail(req, res, {
-      from: req.app.get('smtp-from-name') +' <'+ req.app.get('smtp-from-address') +'>',
+      from: req.app.config.smtp.from.name +' <'+ req.app.config.smtp.from.address +'>',
       to: req.body.email,
-      subject: 'Your '+ req.app.get('project-name') +' Account',
+      subject: 'Your '+ req.app.config.projectName +' Account',
       textPath: 'signup/email-text',
       htmlPath: 'signup/email-html',
       locals: {
         username: req.body.username,
         email: req.body.email,
-        loginURL: 'http://'+ req.headers.host +'/login/',
-        projectName: req.app.get('project-name')
+        loginURL: req.protocol +'://'+ req.headers.host +'/login/',
+        projectName: req.app.config.projectName
       },
       success: function(message) {
         workflow.emit('logUserIn');
@@ -189,7 +191,7 @@ exports.signupTwitter = function(req, res, next) {
       return res.redirect('/signup/');
     }
 
-    req.app.db.models.User.findOne({ 'twitter.id': info.profile._json.id }, function(err, user) {
+    req.app.db.models.User.findOne({ 'twitter.id': info.profile.id }, function(err, user) {
       if (err) {
         return next(err);
       }
@@ -201,9 +203,11 @@ exports.signupTwitter = function(req, res, next) {
       else {
         res.render('signup/index', {
           oauthMessage: 'We found a user linked to your Twitter account.',
-          oauthTwitter: !!req.app.get('twitter-oauth-key'),
-          oauthGitHub: !!req.app.get('github-oauth-key'),
-          oauthFacebook: !!req.app.get('facebook-oauth-key')
+          oauthTwitter: !!req.app.config.oauth.twitter.key,
+          oauthGitHub: !!req.app.config.oauth.github.key,
+          oauthFacebook: !!req.app.config.oauth.facebook.key,
+          oauthGoogle: !!req.app.config.oauth.google.key,
+          oauthTumblr: !!req.app.config.oauth.tumblr.key
         });
       }
     });
@@ -216,7 +220,7 @@ exports.signupGitHub = function(req, res, next) {
       return res.redirect('/signup/');
     }
 
-    req.app.db.models.User.findOne({ 'github.id': info.profile._json.id }, function(err, user) {
+    req.app.db.models.User.findOne({ 'github.id': info.profile.id }, function(err, user) {
       if (err) {
         return next(err);
       }
@@ -228,9 +232,11 @@ exports.signupGitHub = function(req, res, next) {
       else {
         res.render('signup/index', {
           oauthMessage: 'We found a user linked to your GitHub account.',
-          oauthTwitter: !!req.app.get('twitter-oauth-key'),
-          oauthGitHub: !!req.app.get('github-oauth-key'),
-          oauthFacebook: !!req.app.get('facebook-oauth-key')
+          oauthTwitter: !!req.app.config.oauth.twitter.key,
+          oauthGitHub: !!req.app.config.oauth.github.key,
+          oauthFacebook: !!req.app.config.oauth.facebook.key,
+          oauthGoogle: !!req.app.config.oauth.google.key,
+          oauthTumblr: !!req.app.config.oauth.tumblr.key
         });
       }
     });
@@ -243,7 +249,7 @@ exports.signupFacebook = function(req, res, next) {
       return res.redirect('/signup/');
     }
 
-    req.app.db.models.User.findOne({ 'facebook.id': info.profile._json.id }, function(err, user) {
+    req.app.db.models.User.findOne({ 'facebook.id': info.profile.id }, function(err, user) {
       if (err) {
         return next(err);
       }
@@ -254,9 +260,71 @@ exports.signupFacebook = function(req, res, next) {
       else {
         res.render('signup/index', {
           oauthMessage: 'We found a user linked to your Facebook account.',
-          oauthTwitter: !!req.app.get('twitter-oauth-key'),
-          oauthGitHub: !!req.app.get('github-oauth-key'),
-          oauthFacebook: !!req.app.get('facebook-oauth-key')
+          oauthTwitter: !!req.app.config.oauth.twitter.key,
+          oauthGitHub: !!req.app.config.oauth.github.key,
+          oauthFacebook: !!req.app.config.oauth.facebook.key,
+          oauthGoogle: !!req.app.config.oauth.google.key,
+          oauthTumblr: !!req.app.config.oauth.tumblr.key
+        });
+      }
+    });
+  })(req, res, next);
+};
+
+exports.signupGoogle = function(req, res, next) {
+  req._passport.instance.authenticate('google', { callbackURL: '/signup/google/callback/' }, function(err, user, info) {
+    if (!info || !info.profile) {
+      return res.redirect('/signup/');
+    }
+
+    req.app.db.models.User.findOne({ 'google.id': info.profile.id }, function(err, user) {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        req.session.socialProfile = info.profile;
+        res.render('signup/social', { email: info.profile.emails && info.profile.emails[0].value || '' });
+      }
+      else {
+        res.render('signup/index', {
+          oauthMessage: 'We found a user linked to your Google account.',
+          oauthTwitter: !!req.app.config.oauth.twitter.key,
+          oauthGitHub: !!req.app.config.oauth.github.key,
+          oauthFacebook: !!req.app.config.oauth.facebook.key,
+          oauthGoogle: !!req.app.config.oauth.google.key,
+          oauthTumblr: !!req.app.config.oauth.tumblr.key
+        });
+      }
+    });
+  })(req, res, next);
+};
+
+exports.signupTumblr = function(req, res, next) {
+  req._passport.instance.authenticate('tumblr', { callbackURL: '/signup/tumblr/callback/' }, function(err, user, info) {
+    if (!info || !info.profile) {
+      return res.redirect('/signup/');
+    }
+
+    if (!info.profile.hasOwnProperty('id')) {
+      info.profile.id = info.profile.username;
+    }
+
+    req.app.db.models.User.findOne({ 'tumblr.id': info.profile.id }, function(err, user) {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        req.session.socialProfile = info.profile;
+        res.render('signup/social', { email: info.profile.emails && info.profile.emails[0].value || '' });
+      }
+      else {
+        res.render('signup/index', {
+          oauthMessage: 'We found a user linked to your Tumblr account.',
+          oauthTwitter: !!req.app.config.oauth.twitter.key,
+          oauthGitHub: !!req.app.config.oauth.github.key,
+          oauthFacebook: !!req.app.config.oauth.facebook.key,
+          oauthGoogle: !!req.app.config.oauth.google.key,
+          oauthTumblr: !!req.app.config.oauth.tumblr.key
         });
       }
     });
@@ -282,7 +350,7 @@ exports.signupSocial = function(req, res){
   });
 
   workflow.on('duplicateUsernameCheck', function() {
-    workflow.username = req.session.socialProfile.username;
+    workflow.username = req.session.socialProfile.username || req.session.socialProfile.id;
     if (!/^[a-zA-Z0-9\-\_]+$/.test(workflow.username)) {
       workflow.username = workflow.username.replace(/[^a-zA-Z0-9\-\_]/g, '');
     }
@@ -328,7 +396,7 @@ exports.signupSocial = function(req, res){
         req.body.email
       ]
     };
-    fieldsToSet[req.session.socialProfile.provider] = req.session.socialProfile._json;
+    fieldsToSet[req.session.socialProfile.provider] = { id: req.session.socialProfile.id };
 
     req.app.db.models.User.create(fieldsToSet, function(err, user) {
       if (err) {
@@ -376,16 +444,16 @@ exports.signupSocial = function(req, res){
 
   workflow.on('sendWelcomeEmail', function() {
     req.app.utility.sendmail(req, res, {
-      from: req.app.get('smtp-from-name') +' <'+ req.app.get('smtp-from-address') +'>',
+      from: req.app.config.smtp.from.name +' <'+ req.app.config.smtp.from.address +'>',
       to: req.body.email,
-      subject: 'Your '+ req.app.get('project-name') +' Account',
+      subject: 'Your '+ req.app.config.projectName +' Account',
       textPath: 'signup/email-text',
       htmlPath: 'signup/email-html',
       locals: {
         username: workflow.user.username,
         email: req.body.email,
-        loginURL: 'http://'+ req.headers.host +'/login/',
-        projectName: req.app.get('project-name')
+        loginURL: req.protocol +'://'+ req.headers.host +'/login/',
+        projectName: req.app.config.projectName
       },
       success: function(message) {
         workflow.emit('logUserIn');

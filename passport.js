@@ -4,7 +4,9 @@ exports = module.exports = function(app, passport) {
   var LocalStrategy = require('passport-local').Strategy,
       TwitterStrategy = require('passport-twitter').Strategy,
       GitHubStrategy = require('passport-github').Strategy,
-      FacebookStrategy = require('passport-facebook').Strategy;
+      FacebookStrategy = require('passport-facebook').Strategy,
+      GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
+      TumblrStrategy = require('passport-tumblr').Strategy;
 
   passport.use(new LocalStrategy(
     function(username, password, done) {
@@ -40,10 +42,10 @@ exports = module.exports = function(app, passport) {
     }
   ));
 
-  if (app.get('twitter-oauth-key')) {
+  if (app.config.oauth.twitter.key) {
     passport.use(new TwitterStrategy({
-        consumerKey: app.get('twitter-oauth-key'),
-        consumerSecret: app.get('twitter-oauth-secret')
+        consumerKey: app.config.oauth.twitter.key,
+        consumerSecret: app.config.oauth.twitter.secret
       },
       function(token, tokenSecret, profile, done) {
         done(null, false, {
@@ -55,11 +57,11 @@ exports = module.exports = function(app, passport) {
     ));
   }
 
-  if (app.get('github-oauth-key')) {
+  if (app.config.oauth.github.key) {
     passport.use(new GitHubStrategy({
-        clientID: app.get('github-oauth-key'),
-        clientSecret: app.get('github-oauth-secret'),
-        customHeaders: { "User-Agent": app.get('project-name') }
+        clientID: app.config.oauth.github.key,
+        clientSecret: app.config.oauth.github.secret,
+        customHeaders: { "User-Agent": app.config.projectName }
       },
       function(accessToken, refreshToken, profile, done) {
         done(null, false, {
@@ -71,15 +73,45 @@ exports = module.exports = function(app, passport) {
     ));
   }
 
-  if (app.get('facebook-oauth-key')) {
+  if (app.config.oauth.facebook.key) {
     passport.use(new FacebookStrategy({
-        clientID: app.get('facebook-oauth-key'),
-        clientSecret: app.get('facebook-oauth-secret')
+        clientID: app.config.oauth.facebook.key,
+        clientSecret: app.config.oauth.facebook.secret
       },
       function(accessToken, refreshToken, profile, done) {
         done(null, false, {
           accessToken: accessToken,
           refreshToken: refreshToken,
+          profile: profile
+        });
+      }
+    ));
+  }
+
+  if (app.config.oauth.google.key) {
+    passport.use(new GoogleStrategy({
+        clientID: app.config.oauth.google.key,
+        clientSecret: app.config.oauth.google.secret
+      },
+      function(accessToken, refreshToken, profile, done) {
+        done(null, false, {
+          accessToken: accessToken,
+          refreshToken: refreshToken,
+          profile: profile
+        });
+      }
+    ));
+  }
+
+  if (app.config.oauth.tumblr.key) {
+    passport.use(new TumblrStrategy({
+        consumerKey: app.config.oauth.tumblr.key,
+        consumerSecret: app.config.oauth.tumblr.secret
+      },
+      function(token, tokenSecret, profile, done) {
+        done(null, false, {
+          token: token,
+          tokenSecret: tokenSecret,
           profile: profile
         });
       }
@@ -92,7 +124,7 @@ exports = module.exports = function(app, passport) {
 
   passport.deserializeUser(function(id, done) {
     app.db.models.User.findOne({ _id: id }).populate('roles.admin').populate('roles.account').exec(function(err, user) {
-      if (user.roles && user.roles.admin) {
+      if (user && user.roles && user.roles.admin) {
         user.roles.admin.populate("groups", function(err, admin) {
           done(err, user);
         });

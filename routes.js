@@ -18,7 +18,7 @@ function ensureAdmin(req, res, next) {
 
 function ensureAccount(req, res, next) {
   if (req.user.canPlayRoleOf('account')) {
-    if (req.app.get('require-account-verification')) {
+    if (req.app.config.requireAccountVerification) {
       if (req.user.roles.account.isVerified !== 'yes' && !/^\/account\/verification\//.test(req.url)) {
         return res.redirect('/account/verification/');
       }
@@ -47,6 +47,10 @@ exports = module.exports = function(app, passport) {
   app.get('/signup/github/callback/', require('./views/signup/index').signupGitHub);
   app.get('/signup/facebook/', passport.authenticate('facebook', { callbackURL: '/signup/facebook/callback/', scope: ['email'] }));
   app.get('/signup/facebook/callback/', require('./views/signup/index').signupFacebook);
+  app.get('/signup/google/', passport.authenticate('google', { callbackURL: '/signup/google/callback/', scope: ['profile email'] }));
+  app.get('/signup/google/callback/', require('./views/signup/index').signupGoogle);
+  app.get('/signup/tumblr/', passport.authenticate('tumblr', { callbackURL: '/signup/tumblr/callback/' }));
+  app.get('/signup/tumblr/callback/', require('./views/signup/index').signupTumblr);
 
   //login/out
   app.get('/login/', require('./views/login/index').init);
@@ -65,6 +69,10 @@ exports = module.exports = function(app, passport) {
   app.get('/login/github/callback/', require('./views/login/index').loginGitHub);
   app.get('/login/facebook/', passport.authenticate('facebook', { callbackURL: '/login/facebook/callback/' }));
   app.get('/login/facebook/callback/', require('./views/login/index').loginFacebook);
+  app.get('/login/google/', passport.authenticate('google', { callbackURL: '/login/google/callback/', scope: ['profile email'] }));
+  app.get('/login/google/callback/', require('./views/login/index').loginGoogle);
+  app.get('/login/tumblr/', passport.authenticate('tumblr', { callbackURL: '/login/tumblr/callback/', scope: ['profile email'] }));
+  app.get('/login/tumblr/callback/', require('./views/login/index').loginTumblr);
 
   //admin
   app.all('/admin*', ensureAuthenticated);
@@ -156,6 +164,12 @@ exports = module.exports = function(app, passport) {
   app.get('/account/settings/facebook/', passport.authenticate('facebook', { callbackURL: '/account/settings/facebook/callback/' }));
   app.get('/account/settings/facebook/callback/', require('./views/account/settings/index').connectFacebook);
   app.get('/account/settings/facebook/disconnect/', require('./views/account/settings/index').disconnectFacebook);
+  app.get('/account/settings/google/', passport.authenticate('google', { callbackURL: '/account/settings/google/callback/', scope: ['profile email'] }));
+  app.get('/account/settings/google/callback/', require('./views/account/settings/index').connectGoogle);
+  app.get('/account/settings/google/disconnect/', require('./views/account/settings/index').disconnectGoogle);
+  app.get('/account/settings/tumblr/', passport.authenticate('tumblr', { callbackURL: '/account/settings/tumblr/callback/' }));
+  app.get('/account/settings/tumblr/callback/', require('./views/account/settings/index').connectTumblr);
+  app.get('/account/settings/tumblr/disconnect/', require('./views/account/settings/index').disconnectTumblr);
 
   //account
   app.all('/wallet*', ensureAuthenticated);
