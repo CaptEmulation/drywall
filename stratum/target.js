@@ -26,7 +26,7 @@ exports.create = function (options) {
           method: 'mining.authorize',
           params: [ clientModel.user, clientModel.password ],
           id: authorizeId
-        }));
+        }) + '\n');
       }
 
       if (!waitForAuthorizedResponseDefer || (waitForAuthorizedResponseDefer && waitForAuthorizedResponseDefer.isFulfilled)) {

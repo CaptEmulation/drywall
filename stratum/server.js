@@ -4,6 +4,7 @@
 
 var Q = require('q');
 var net = require('net');
+var createSocket = require('./socket').create;
 
 var once = exports.onceThen = function (first, then) {
   var run = false;
@@ -67,7 +68,8 @@ exports.create = function (options) {
   var target = options.target;
   var defer = Q.defer();
 
-  var server = net.createServer(function (client) {
+  var server = net.createServer(function (rawSocket) {
+    var client = createSocket(rawSocket);
     var authorizedDefer = Q.defer();
     var authorizationHandler = miningAuthorized(client, options.server, target, authorizedDefer);
 

@@ -76,17 +76,17 @@ describe('Target test suite', function () {
     }
 
     it('Receives data from connected client', function () {
-      clientSendsData('{}');
+      clientSendsData('{}\n');
       expect(connectSocketStub.write.firstCall.args[0]).to.equal('{}\n');
     });
 
     it('Send data to connected client', function () {
-      serverSendsData('{}');
+      serverSendsData('{}\n');
       expect(test.options.socket.write.firstCall.args[0]).to.contain('{}');
     });
 
     it('Server receives  mining.authorized request', function () {
-      serverSendsData('{}');
+      serverSendsData('{}\n');
       expect(connectSocketStub.write.firstCall.args[0].indexOf('mining.authorize') !== -1).to.equal(true);
     });
 

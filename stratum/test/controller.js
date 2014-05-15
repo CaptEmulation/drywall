@@ -140,7 +140,7 @@ describe('controller test suite', function () {
         method: 'mining.authorize',
         params: [ 'test', 'test' ],
         id: 1
-      }));
+      }) + '\n');
       expect(readLastServerData).to.throw();
     });
 
