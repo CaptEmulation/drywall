@@ -73,6 +73,7 @@ app.configure(function(){
   app.use(express.json());
   app.use(express.methodOverride());
   app.use(express.cookieParser());
+  app.use(express.bodyParser());
   app.use(express.session({
     secret: config.cryptoKey,
     store: app.sessionStore

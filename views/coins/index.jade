@@ -11,13 +11,21 @@ block feet
 
 block body
   div.row
-    div.col-sm-6
+    div.col-lg-14
       div.page-header
         h1 My Wallet
+      div.row.coin-balances
+        div.col-lg-8.coin-balances
       div.row
-        div.col-sm-4
-          table.table.table-striped.table-hover
-            each row in data
-              tr
-                != row.render()
-          button.btn.btn-primary Add
+        div.col-lg-6.coin-table
+  div.row.modal-content
+
+
+
+script(type='text/template', id='tmpl-_coin-balance-grid')
+  div.col-sm-4
+
+script(type='text/template', id='tmpl-_coin-balance-cell')
+  div.well.stat
+    div.stat-value --
+    div.stat-label !='<% stat %>'

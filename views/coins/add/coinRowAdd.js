@@ -3,13 +3,12 @@
  */
 'use strict';
 
-
 var fs = require('fs');
 var jade = require('jade');
 
 var jadeTemplate;
 
-fs.readFile('views/coins/coinRowHeader.jade', 'utf8', function (err,data) {
+fs.readFile('views/coins/add/coinRowAdd.jade', 'utf8', function (err,data) {
   if (err) {
     return console.log(err);
   }
@@ -17,5 +16,5 @@ fs.readFile('views/coins/coinRowHeader.jade', 'utf8', function (err,data) {
 });
 
 exports.render = function () {
-  return jade.render(jadeTemplate);
+  return jade.compile(jadeTemplate)();
 };

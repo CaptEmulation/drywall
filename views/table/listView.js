@@ -22,11 +22,6 @@ ListView.prototype.data = function () {
   console.log('building tableView data');
   var data = [], rowCount = this.rowCount();
 
-  // Check for header
-  if (typeof this._delegate.htmlForHeader) {
-    data.push(jadeRendererFromFunc(this._delegate.htmlForHeader));
-  }
-
   for (var i = 0; i < rowCount; i++) {
     data.push(this._dataForRow(i));
   }

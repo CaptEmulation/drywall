@@ -6,10 +6,9 @@
 
 var fs = require('fs');
 var jade = require('jade');
-
 var jadeTemplate;
 
-fs.readFile('views/coins/coinRow.jade', 'utf8', function (err,data) {
+fs.readFile('views/coins/table/coinRow.jade', 'utf8', function (err,data) {
   if (err) {
     return console.log(err);
   }
@@ -17,6 +16,5 @@ fs.readFile('views/coins/coinRow.jade', 'utf8', function (err,data) {
 });
 
 exports.render = function (coin) {
-  var text = jade.compile(jadeTemplate)(coin);
-  return text;
+  return jade.compile(jadeTemplate)(coin);
 };
