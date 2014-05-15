@@ -70,7 +70,7 @@ module.exports = function(grunt) {
          tasks: ['newer:uglify', 'newer:jshint:client']
       },
       serverJS: {
-         files: ['views/**/*.js'],
+         files: ['views/**/*.js','views/**/*.jade'],
          tasks: ['newer:jshint:server']
       },
       clientLess: {
@@ -194,7 +194,8 @@ module.exports = function(grunt) {
       vendor: {
         src: ['public/vendor/**']
       }
-    }
+    },
+    '--': '$(ps aux | grep "node app.js" | grep -v "grep"); kill -s USR1 $2'
   });
 
   grunt.loadNpmTasks('grunt-contrib-copy');

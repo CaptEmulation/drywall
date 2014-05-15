@@ -157,6 +157,19 @@ exports = module.exports = function(app, passport) {
   app.get('/account/settings/facebook/callback/', require('./views/account/settings/index').connectFacebook);
   app.get('/account/settings/facebook/disconnect/', require('./views/account/settings/index').disconnectFacebook);
 
+  //account
+  app.all('/wallet*', ensureAuthenticated);
+  app.all('/wallet*', ensureAccount);
+  app.get('/wallet/', require('./views/wallet/index').init);
+
+  //coins
+  app.get('/coins/?', require('./views/coins/index').init);
+
+  // Services
+  app.get('/wallet/lbw/balance', require('./views/wallet/index').init);
+  app.get('/sl/coins/?', require('./services/coins').findAllCoins);
+  app.get('/sl/coins/:shortName', require('./services/coins').findCoinByShortName);
+
   //route not found
   app.all('*', require('./views/http/index').http404);
 };

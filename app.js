@@ -8,7 +8,8 @@ var config = require('./config'),
     path = require('path'),
     passport = require('passport'),
     mongoose = require('mongoose'),
-    helmet = require('helmet');
+    helmet = require('helmet'),
+    restify = require('restify');
 
 //create express app
 var app = express();
