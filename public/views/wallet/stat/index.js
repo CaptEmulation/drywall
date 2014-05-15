@@ -25,7 +25,9 @@ define(function (require, exports, module) {
   });
 
   var WalletStatTable = Backbone.Marionette.CollectionView.extend({
-    itemView: WalletStatTableItem
+    itemView: WalletStatTableItem,
+    tagName: 'ul',
+    className: 'list-unstyled list-group'
   });
 
   var statModel = rpc.walletConnect(walletId).statModel();

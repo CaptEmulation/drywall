@@ -12,11 +12,11 @@ block body
       div.page-header
         h1 Statistics
       div.row
-        div.col-lg-8.stat-content
+        div.col-lg-3.stat-content.panel
 
 
 block feet
   script(type='text/template', id='tmpl-_wallet-stat-item')
-    div.stat-label <%= obj.label%>
-    div.stat-value <%= obj.value%>
-    div.separator
+    li.list-group-item
+      div.stat-label <%= obj.label%>
+      div.stat-value.text-right <%= obj.value%>

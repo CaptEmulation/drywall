@@ -20,6 +20,7 @@ block body
   div.row.modal-content
 
   script(type='text/template', id='tmpl-_coin-balance-cell')
-    div.stat-value Name
-    div.stat-label
-      !='<%= obj.fullName %>'
+    a(href!='/wallet/<%=obj._id%>/stat')
+      div.stat-value Name
+      div.stat-label
+        !='<%= obj.fullName %>'

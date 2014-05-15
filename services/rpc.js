@@ -25,6 +25,7 @@ var rpcToWallet = {
   },
   'getblockcount': function (wallet, options, callback) {
     return wallet.getBlockCount(function (err, count) {
+      console.log(err + count);
       if (err) return callback(console.log(err));
       return callback(err, {
         blockCount: count
@@ -80,10 +81,10 @@ exports.init = function (req, res) {
       pass: coin.rpcPassword
     });
     rpcToWallet[command](rpcClient, req.params, function (err, rpcRes) {
-      console.log('get response from wallet RPC');
       if (err) {
         res.send(500, err);
       } else {
+        console.log('get response from wallet RPC ');
         res.send(rpcRes);
       }
     });
