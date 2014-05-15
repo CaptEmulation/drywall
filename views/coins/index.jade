@@ -19,11 +19,7 @@ block body
         div.col-lg-6.coin-table
   div.row.modal-content
 
-  script(type='text/template', id='tmpl-_coin-balance-row')
-    div.row
-
   script(type='text/template', id='tmpl-_coin-balance-cell')
-    div.well.stat.div.col-sm-4
-      div.stat-value --
-      div.stat-label
-        !='<%= obj.fullName %>'
+    div.stat-value Name
+    div.stat-label
+      !='<%= obj.fullName %>'

@@ -160,16 +160,16 @@ exports = module.exports = function(app, passport) {
   //account
 //  app.all('/wallet*', ensureAuthenticated);
 //  app.all('/wallet*', ensureAccount);
-  app.get('/wallet/', require('./views/wallet/index').init);
+  app.get('/wallet/?', require('./views/wallet/index').init);
+  app.get('/wallet/:id/stat/?', require('./views/wallet/stat/index').init);
 
   //coins
 //  app.all('/coins*', ensureAuthenticated);
 //  app.all('/coins*', ensureAccount);
-  app.get('/wallet/?', require('./views/wallet/index').init);
+  app.get('/coins/?', require('./views/coins/index').init);
 
 
   // Services
-  app.get('/wallet/lbw/balance', require('./views/wallet/index').init);
   app.get('/sl/wallet/:id/:rpc', require('./services/rpc').init);
   app.get('/sl/wallet/?', require('./services/wallet').find);
   app.post('/sl/wallet/?', require('./services/wallet').create);

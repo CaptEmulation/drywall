@@ -93,8 +93,9 @@ define(function (require, exports, module) {
     },
 
     onConfirmButtonClicked: function () {
+      this.wallet.set(formData(this.$el));
       this.collection.add(this.wallet);
-      this.wallet.save(formData(this.$el)).then(this.close.bind(this));
+      this.wallet.save().then(this.close.bind(this));
     }
   });
 

@@ -1,0 +1,22 @@
+//
+   Created by jdean on 3/10/14.
+
+extends ../../../layouts/coin
+block head
+  title Statistics Area
+block neck
+  link(rel='stylesheet', href='/views/wallet/stat/index.min.css?#{cacheBreaker}')
+block body
+  div.row
+    div.col-lg-14
+      div.page-header
+        h1 Statistics
+      div.row
+        div.col-lg-8.stat-content
+
+
+block feet
+  script(type='text/template', id='tmpl-_wallet-stat-item')
+    div.stat-label <%= obj.label%>
+    div.stat-value <%= obj.value%>
+    div.separator

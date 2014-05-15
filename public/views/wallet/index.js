@@ -13,7 +13,7 @@ define(function (require, exports, module) {
   require('backbone.validateAll');
   var $ = require('jquery');
 
-  var WalletCollection = require('wallet/model').WalletCollection;
+  var WalletCollection = require('models/wallet').WalletCollection;
   var WalletGrid = require('wallet/grid').WalletGrid;
 
   var walletCollection = new WalletCollection();

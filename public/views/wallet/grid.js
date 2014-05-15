@@ -11,7 +11,7 @@ define(function (require, exports, module) {
   var WalletDeleteDialog = require('wallet/dialog').WalletDeleteDialog;
   var WalletAddDialog = require('wallet/dialog').WalletAddDialog;
   var WalletEditDialog = require('wallet/dialog').WalletEditDialog;
-  var WalletModel = require('wallet/model').WalletModel;
+  var WalletModel = require('models/wallet').WalletModel;
 
 
   var showDialog = function (DialogConstructor, model) {
