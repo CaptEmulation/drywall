@@ -21,6 +21,7 @@ block body
 
   script(type='text/template', id='tmpl-_coin-balance-cell')
     a(href!='/wallet/<%=obj._id%>/stat')
-      div.stat-value Name
+      div.stat-value
+        !='<%= obj.shortName %>'
       div.stat-label
         !='<%= obj.fullName %>'
