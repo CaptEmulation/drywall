@@ -119,9 +119,6 @@ app.utility.sendmail = require('drywall-sendmail');
 app.utility.slugify = require('drywall-slugify');
 app.utility.workflow = require('drywall-workflow');
 
-// Start stratum
-require('./stratum/controller').start(app);
-
 // Drastic error reporting
 process.on('uncaughtException', function (err) {
   console.log('Caught exception: ' + err + "\n" + err.stack);
@@ -132,4 +129,6 @@ app.server.listen(app.get('port'), function(){
   //and... we're live
 });
 
-require('./stratum/proxy').init(app.db);
+require('./stratum/controller').start(app).then(function () {
+  console.log('Stratum controller is a go.');
+});

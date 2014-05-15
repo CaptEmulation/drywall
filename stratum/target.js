@@ -62,13 +62,12 @@ exports.create = function (options) {
       outClientSocket.end();
     });
 
-    self.inClientSocket = inClientSocket;
-    self.outClientSocket = outClientSocket;
   });
 
   var self = {
     loaded: loaded.promise,
-    authorized: waitForAuthorizedDefer.promise
+    authorized: waitForAuthorizedDefer.promise,
+    middle: inClientSocket
   };
   return self;
 };

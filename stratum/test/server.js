@@ -40,12 +40,16 @@ describe('Server test suite', function () {
   });
 
   it('#net.connect', function (done) {
-    test.withAutoConnection().create(done);
+  test.create().loaded.then(function () {
+    done();
   });
+});
 
   describe('after server loaded', function () {
     beforeEach(function (done) {
-      test.withAutoConnection().create(done);
+      test.create().loaded.then(function () {
+        done();
+      });
     });
 
     function clientSendsData(data) {
@@ -57,22 +61,22 @@ describe('Server test suite', function () {
     });
 
     it('Receives data from connected client', function () {
-      clientSendsData('{}');
-      expect(test.options.target.write.firstCall.args[0]).to.equal('{}');
+      clientSendsData('{}\n');
+      expect(test.options.socket.write.firstCall.args[0]).to.equal('{}\n');
     });
 
     it('Sends data to connected client', function () {
-      var serverDataCallback = test.options.target.on.firstCall.args[1];
-      serverDataCallback('{}');
-      expect(serverStub.write.firstCall.args[0]).to.equal('{}');
+      var serverDataCallback = test.options.socket.on.firstCall.args[1];
+      serverDataCallback('{}\n');
+      expect(serverStub.write.firstCall.args[0]).to.equal('{}\n');
     });
 
     it('Server socket receives modified mining.authorized requests', function () {
       clientSendsData(JSON.stringify({
         method: 'mining.authorize',
         params: [ 'foo', 'bar']
-      }));
-      expect(test.options.target.write.callCount).to.equal(0);
+      }) + '\n');
+      expect(test.options.socket.write.callCount).to.equal(0);
       expect(serverSocketStub.end.callCount).to.equal(0);
     });
 
@@ -80,7 +84,7 @@ describe('Server test suite', function () {
       clientSendsData(JSON.stringify({
         method: 'mining.authorize',
         params: [ 'bar', 'foo']
-      }));
+      }) + '\n');
       expect(serverSocketStub.end.callCount).to.equal(1);
     });
 
@@ -88,7 +92,7 @@ describe('Server test suite', function () {
       clientSendsData(JSON.stringify({
         method: 'mining.authorize',
         params: [ 'foo1', 'bar']
-      }));
+      }) + '\n');
       expect(serverSocketStub.end.callCount).to.equal(1);
     });
 

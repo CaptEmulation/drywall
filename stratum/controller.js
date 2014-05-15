@@ -16,21 +16,6 @@ var MiddlewareSocket = require('es5class').$define('MiddlewareSocket', {
   }
 }).$implement(EventEmitter, true);
 
-var promiseStratumServer = function (stratumProxyData, target) {
-  var promise = createServer({
-    server: stratumProxyData,
-    target: target
-  });
-  return promise;
-};
-
-var promiseStratumTarget = function (stratumClientData, socket) {
-  var promise = createTarget({
-    client: stratumClientData,
-    socket: socket
-  });
-  return promise;
-};
 
 createMiddlewareSocket = function () {
   var socket = new MiddlewareSocket();
@@ -49,6 +34,21 @@ function findClients(app, attr) {
   return stratumClientModel.qFind(attr);
 }
 
+exports.connectTargetToServer = function (target, server) {
+  var defer = Q.defer();
+  var targetAvailable = target.loaded;
+  var serverInitialized = server.loaded;
+  Q.all([
+    targetAvailable,
+    serverInitialized
+  ]).done(function () {
+    target.middle.setSocket(server.middle);
+    server.middle.setSocket(target.middle);
+    defer.resolve();
+  });
+  return defer.promise;
+}
+
 exports.start = function (app) {
   var defer = Q.defer();
   findProxies(app).then(function (models) {
@@ -62,14 +62,10 @@ exports.start = function (app) {
             stratumClientData = models[0];
             var middleTargetSocket = createMiddlewareSocket();
             var middleServerSocket = createMiddlewareSocket();
-            middleTargetSocket.setSocket(middleServerSocket);
-            middleServerSocket.setSocket(middleTargetSocket);
-            promiseStratumTarget(stratumClientData, middleTargetSocket).loaded.then(function (target) {
-              promiseStratumServer(stratumProxyData, middleServerSocket).then(function (server) {
-                server.listen().then(function () {
-                  defer.resolve();
-                });
-              });
+            var target = createTarget({ client:stratumClientData, socket: middleTargetSocket});
+            var server = createServer({ server:stratumProxyData, socket: middleServerSocket});
+            exports.connectTargetToServer(target, server).then(function () {
+              defer.resolve();
             });
           }
         });

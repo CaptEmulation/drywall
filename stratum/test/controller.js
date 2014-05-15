@@ -105,14 +105,9 @@ describe('controller test suite', function () {
   });
 
   describe('communication tests', function () {
-    var originalPromiseStratumServer, stratumTarget;
+    var originalPromiseStratumServer;
 
     beforeEach(function (done) {
-      originalPromiseStratumServer = controller.__get__('promiseStratumServer');
-      controller.__set__('promiseStratumServer', function (proxyData, target) {
-        stratumTarget = target;
-        return originalPromiseStratumServer.apply(this, arguments);
-      });
       proxyFind.addToFound(library.fooServer());
       clientFind.addToFound(library.fooClient());
       test.create().then(function () {
