@@ -49,7 +49,7 @@ exports = module.exports = function(app, mongoose) {
       if (err) {
         return done(err);
       }
-      bcrypt.hash(password, salt, null, function(err, hash) {
+      bcrypt.hash(password, salt, function(err, hash) {
         done(err, hash);
       });
     });
