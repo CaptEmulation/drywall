@@ -21,11 +21,12 @@ app.config = config;
 app.server = http.createServer(app);
 
 //setup mongoose
-app.db = mongoose.createConnection(config.mongodb.uri);
-app.db.on('error', console.error.bind(console, 'mongoose connection error: '));
-app.db.once('open', function () {
+var db = app.db = mongoose.createConnection(config.mongodb.uri, {server:{auto_reconnect:true}});
+
+db.on('error', console.error.bind(console, 'mongoose connection error: '));
+db.once('open', function () {
   //and... we have a data store
-  
+
   //listen up
   app.server.listen(app.config.port, function(){
     //and... we're live
@@ -34,6 +35,27 @@ app.db.once('open', function () {
   require('./stratum/controller').start(app).then(function () {
     console.log('Stratum controller is a go.');
   });
+});
+
+db.on('connecting', function() {
+ console.log('connecting to MongoDB...');
+});
+
+db.on('error', function(error) {
+ mongoose.disconnect();
+});
+db.on('connected', function() {
+ console.log('MongoDB connected!');
+});
+db.once('open', function() {
+ console.log('MongoDB connection opened!');
+});
+db.on('reconnected', function () {
+ console.log('MongoDB reconnected!');
+});
+db.on('disconnected', function() {
+ console.log('MongoDB disconnected!');
+ mongoose.connect(config.mongodb.uri, {server:{auto_reconnect:true}});
 });
 
 //config data models
