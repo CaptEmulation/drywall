@@ -25,6 +25,15 @@ app.db = mongoose.createConnection(config.mongodb.uri);
 app.db.on('error', console.error.bind(console, 'mongoose connection error: '));
 app.db.once('open', function () {
   //and... we have a data store
+  
+  //listen up
+  app.server.listen(app.config.port, function(){
+    //and... we're live
+  });
+
+  require('./stratum/controller').start(app).then(function () {
+    console.log('Stratum controller is a go.');
+  });
 });
 
 //config data models
@@ -83,13 +92,4 @@ app.utility.workflow = require('./util/workflow');
 // Drastic error reporting
 process.on('uncaughtException', function (err) {
   console.log('Caught exception: ' + err + "\n" + err.stack);
-});
-
-//listen up
-app.server.listen(app.config.port, function(){
-  //and... we're live
-});
-
-require('./stratum/controller').start(app).then(function () {
-  console.log('Stratum controller is a go.');
 });
